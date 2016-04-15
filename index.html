@@ -77,8 +77,13 @@ $.getJSON('Lines_Frihavn2.geojson',function(Lines){
 			return {color: "#08184D", weight: lineweight};
 		},
 		onEachFeature: function(feature, layer){
-      layer.bindPopup(feature.properties.MdeT_Total + " copies sent from " + feature.properties.Origin1 + " to " + feature.properties.Destinatio);
-      return layer;
+      var popupContent =
+          feature.properties.MdeT_Total + " copies sent from " + feature.properties.Origin1 + " to " + feature.properties.Destinatio
+      if (feature.properties.MdeT_Total < 2) {
+        popupContent = feature.properties.MdeT_Total + " copy sent from " + feature.properties.Origin1 + " to " + feature.properties.Destinatio
+      }
+        layer.bindPopup(popupContent);
+        return layer;
 		},
 	}).addTo(map);
 });
