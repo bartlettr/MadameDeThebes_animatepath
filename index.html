@@ -12,7 +12,8 @@
 
 <script src="//cdn.jsdelivr.net/leaflet.esri/1.0.0/esri-leaflet.js"></script>
 
-<script src="MarkerCluster/leaflet.markercluster.js"></script>
+<script src="L.Polyline.SnakeAnim.js"></script>
+<script src="https://github.com/IvanSanchez/Leaflet.Polyline.SnakeAnim/blob/master/L.Polyline.SnakeAnim.js"></script>
 
 </head>
 
@@ -24,7 +25,7 @@
 <body>
 
   <h2>Madame de Thebes film distribution, 1915-1918</h2>
-  <p>blah blah</p>
+  <p>Work in progress. <a href="https://github.com/bartlettr/MadameDeThebes">GitHub repository</a></p>
 
 <div id="map"></div>
 
@@ -36,7 +37,7 @@ var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.
 
 var map = L.map('map', {
   scrollWheelZoom: true,
-  center: [-15.0, 15.0],
+  center: [25.0, 25.0],
   zoom: 2
 });
 
@@ -46,16 +47,26 @@ map.addLayer(layer);
 $.getJSON('destinations_apr13_CartoDB.geojson',function(data){
     L.geoJson(data,{
 			pointToLayer: function(feature,latlng){
-				var marker = L.circleMarker(latlng, { //code from http://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
-					fillColor: "#708598",
+        var radius = feature.properties.totalsent + 3
+        var fillcolor;
+        switch (feature.properties.numcopies) {
+          case 1:			  fillcolor = "#8c286e"; break;
+          case 3:			  fillcolor = "#d47384"; break;
+          case 5:			  fillcolor = "#f8ca8c"; break;
+          case 6:			  fillcolor = "#e2ff9e"; break;
+          case 9:			  fillcolor = "#9ed54c"; break;
+          default: 			fillcolor = "#708598";
+        }
+        var marker = L.circleMarker(latlng, { //code from http://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
+					fillColor: fillcolor, //#708598
 					color:"#537898",
 					weight: 1,
 					fillOpacity: 0.8
-				});
-        //marker.bindPopup("<strong>" + feature.properties.name + "</strong><br></br>" + feature.properties.denom_full + " school in " + feature.properties.town + ", " + feature.properties.opened + " - " + feature.properties.closed);
+        }).setRadius(radius);
+        marker.bindPopup("Final date of delivery: " + feature.properties.date);
 				return marker
       }
-  }).addTo(map);
+  }).addTo(map).bringToFront();
 });
 
 //add lines
