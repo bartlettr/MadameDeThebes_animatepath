@@ -1,0 +1,160 @@
+<html>
+
+<head>
+
+<title>Madame de Thebes film distribution</title>
+
+//from http://apps.socib.es/Leaflet.TimeDimension/examples/example15.html
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+<link rel="stylesheet" href="js/vendors/leaflet-0.7.7/leaflet.css" />
+<link rel="stylesheet" href="js/vendors/leaflet-plugins/Leaflet.Coordinates-0.1.3.css" />
+<link rel="stylesheet" href="js/vendors/leaflet-plugins/Control.FullScreen.css" />
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="https://github.com/socib/Leaflet.TimeDimension/blob/master/src/leaflet.timedimension.control.css" />
+<link rel="stylesheet" href="https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/css/style.css" />
+<link rel="stylesheet" href="https://github.com/socib/Leaflet.TimeDimension/tree/master/src" />
+<script src="https://github.com/socib/Leaflet.TimeDimension/blob/master/dist/leaflet.timedimension.min.js"></script>
+<script src="https://github.com/socib/Leaflet.TimeDimension/blob/master/dist/leaflet.timedimension.src.js"></script>
+<script src="https://github.com/socib/Leaflet.TimeDimension/blob/master/dist/leaflet.timedimension.src.withlog.js"></script>
+
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+<link rel="stylesheet" href="styles.css" />
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/leaflet.esri/1.0.0/esri-leaflet.js"></script>
+
+</head>
+
+<style>
+  body {
+    font-family: "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
+  }
+</style>
+<body>
+
+  <h2>Madame de Thebes film distribution, 1915-1918</h2>
+  <p>Work in progress. <a href="https://github.com/bartlettr/MadameDeThebes">GitHub repository</a></p>
+
+<div id="map"></div>
+
+<script>
+
+var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+});
+
+//code from http://apps.socib.es/Leaflet.TimeDimension/examples/example15.html
+
+var startDate = new Date();
+startDate.setUTCHours(0, 0, 0, 0);
+
+var map = L.map('map', {
+    zoom: 2,
+    fullscreenControl: true,
+    timeDimensionControl: true,
+    timeDimensionControlOptions: {
+        position: 'bottomleft',
+        autoPlay: true,
+        timeSlider: false,
+        loopButton: true,
+        playerOptions: {
+            transitionTime: 125,
+            loop: false,
+        }
+    },
+    timeDimensionOptions: {
+        timeInterval: "1914-12-01/P1M", //https://en.wikipedia.org/wiki/ISO_8601#Time_intervals
+        period: "P4Y" //https://en.wikipedia.org/wiki/ISO_8601#Durations
+    },
+    timeDimension: true,
+    scrollWheelZoom: true,
+    center: [25.0, 25.0]
+});
+
+/*
+var map = L.map('map', {
+  scrollWheelZoom: true,
+  center: [25.0, 25.0],
+  zoom: 2
+});
+*/
+map.addLayer(layer);
+
+//add points
+$.getJSON('destinations_apr13_CartoDB.geojson',function(data){
+    var Points = L.geoJson(data,{
+  			pointToLayer: function(feature,latlng){
+          var radius = feature.properties.totalsent + 3
+          var fillcolor;
+          switch (feature.properties.numcopies) {
+            case 1:			  fillcolor = "#8c286e"; break;
+            case 3:			  fillcolor = "#d47384"; break;
+            case 5:			  fillcolor = "#f8ca8c"; break;
+            case 6:			  fillcolor = "#e2ff9e"; break;
+            case 9:			  fillcolor = "#9ed54c"; break;
+            default: 			fillcolor = "#708598";
+          }
+          var marker = L.circleMarker(latlng, { //code from http://cartographicperspectives.org/index.php/journal/article/view/cp76-donohue-et-al/1307
+  					fillColor: fillcolor, //#708598
+  					color:"#537898",
+  					weight: 1,
+  					fillOpacity: 0.8
+          }).setRadius(radius);
+          marker.bindPopup("Final date of delivery: " + feature.properties.date);
+  				return marker
+        }
+    }).addTo(map).bringToFront();
+  });
+  var TimePoints = L.timeDimension.layer(Points,{
+    updateTimeDimension: true,
+    updateTimeDimensionMode: 'replace',
+    addlastPoint: false,
+    duration: 'P1M',
+  });
+  TimePoints.addto(map);
+
+  var Legend = L.control({
+        position: 'bottomright'
+    });
+
+/*
+//add lines
+$.getJSON('Lines_Frihavn2.geojson',function(Lines){
+  L.geoJson( Lines,{
+		style: function (feature){
+      var lineweight;
+        switch (feature.properties.MdeT_Total) {
+          case '2':			lineweight = 3; break;
+          case '3':			lineweight = 4; break;
+          case '5':			lineweight = 6; break;
+          case '6':			lineweight = 7; break;
+          case '7':			lineweight = 8; break;
+          case '8':			lineweight = 9; break;
+          case '9':			lineweight = 10; break;
+          case '10':		lineweight = 11; break;
+          default: 			lineweight = 2;
+        }
+			return {color: "#08184D", weight: lineweight};
+		},
+		onEachFeature: function(feature, layer){
+      var popupContent =
+          feature.properties.MdeT_Total + " copies sent from " + feature.properties.Origin1 + " to " + feature.properties.Destinatio
+      if (feature.properties.MdeT_Total < 2) {
+        popupContent = feature.properties.MdeT_Total + " copy sent from " + feature.properties.Origin1 + " to " + feature.properties.Destinatio
+      }
+        layer.bindPopup(popupContent);
+        return layer;
+		},
+	}).addTo(map);
+});
+*/
+
+L.control.scale().addTo(map);
+
+</script>
+
+</body>
+
+</html>
