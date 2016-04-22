@@ -1,6 +1,0 @@
-[submodule "LeafletSlider"]
-	path = LeafletSlider
-	url = https://github.com/dwilhelm89/LeafletSlider.git
-[submodule "Leaflet.TimeDimension"]
-	path = Leaflet.TimeDimension
-	url = https://github.com/socib/Leaflet.TimeDimension.git
