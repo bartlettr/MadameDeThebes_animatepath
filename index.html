@@ -111,7 +111,7 @@ for (var i = 0; i < pairs.length; i++) {
 $.getJSON('destinations_apr13_CartoDB.geojson',function(data){
     var Points = L.geoJson(data,{
   			pointToLayer: function(feature,latlng){
-          var radius = feature.properties.totalsent + 2
+          var radius = feature.properties.totalsent + 1
           /*var fillcolor;
           switch (feature.properties.numcopies) {
             case 1:			  fillcolor = "#8c286e"; break;
@@ -127,7 +127,7 @@ $.getJSON('destinations_apr13_CartoDB.geojson',function(data){
   					weight: 1,
   					fillOpacity: 0.8
           }).setRadius(radius);
-          marker.bindPopup("Final date of delivery: " + feature.properties.date);
+          marker.bindPopup(feature.properties.destctry + " received " + feature.properties.totalsent + " copies of Madame de Thebes by " + feature.properties.date);
   				return marker
         }
     }).addTo(map).sendToBack();
