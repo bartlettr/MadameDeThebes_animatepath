@@ -127,7 +127,7 @@ $.getJSON('destinations_apr13_CartoDB.geojson',function(data){
   					weight: 1,
   					fillOpacity: 0.8
           }).setRadius(radius);
-          marker.bindPopup(feature.properties.totalsent + " copies of Madame de Thebes were delivered to " + feature.properties.destctry + " by " + feature.properties.date);
+          marker.bindPopup(feature.properties.totalsent + " copies of Madame de Thebes delivered to " + feature.properties.destctry + " by " + feature.properties.date);
   				return marker
         }
     }).addTo(map).sendToBack();
