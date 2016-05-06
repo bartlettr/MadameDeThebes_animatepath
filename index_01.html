@@ -45,6 +45,7 @@
 <div id='map' class='dark'></div>
 
 <script>
+//A sample change to demo for Joël
 L.mapbox.accessToken = 'pk.eyJ1IjoiYmFydGxldHRyIiwiYSI6ImJZaWVsOHMifQ.Phd2UxnLvo6F2oZdmyzRlQ';
 // This is an advanced example that is compatible with
 // modern browsers and IE9+ - the trick it uses is animation
@@ -103,7 +104,7 @@ for (var i = 0; i < pairs.length; i++) {
         return function() {
             // setting the strokeDashoffset to 0 triggers
             // the animation.
-            path.style.strokeDashoffset = -1*totalLength;
+            path.style.strokeDashoffset = 0; //-1*totalLength;
             //path.style.strokeDasharray = -1*totalLength/2;// + ' ' + -1*totalLength;
         };
     })(newLine._path), i * 500);
